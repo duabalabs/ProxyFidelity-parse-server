@@ -1,1 +1,1 @@
-# ProxyFidelity-parse-server
+# template-parse-server
