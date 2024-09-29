@@ -1,6 +1,6 @@
 {
   "name": "parse-server",
-  "version": "0/0/1",
+  "version": "0.0.1",
   "description": "PArse Sere",
   "repository": {
     "type": "git",
@@ -24,9 +24,9 @@
     "aws-sdk": "^2.1691.0",
     "dotenv": "^16.4.5",
     "express": "4.18.2",
-    "parse": "^5.0.0",
-    "parse-dashboard": "^5.3.0",
-    "parse-server": "^7.0.0"
+    "parse": "^5.3.0",
+    "parse-dashboard": "^5.4.0",
+    "parse-server": "^7.2.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.21.3",
@@ -53,9 +53,6 @@
     "semantic-release": "21.0.3",
     "ts-node": "^10.7.0",
     "typescript": "^4.9.5"
-  },
-  "engines": {
-    "node": ">=14.21.0 <17 || >=18 <20"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

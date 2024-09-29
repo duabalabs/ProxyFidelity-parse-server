@@ -75,14 +75,13 @@ const dashboard_config = () => {
 (async () => {
   const server = new ParseServer({
     databaseURI: process.env.PARSE_DATABASE_URI,
-    // allowClientClassCreation: false,
+    allowClientClassCreation: true,
     appId: process.env.PARSE_APP_ID,
     masterKey: process.env.PARSE_MASTER_KEY,
     serverURL: process.env.PARSE_SERVER_URL,
+    masterKeyIps: ['0.0.0.0/0', '::1'],
     javascriptKey: process.env.PARSE_JAVASCRIPT_KEY,
     cloud: process.env.CLOUD_CODE_MAIN || "./src/cloud/main.ts",
-    defaultACL: { currentUser: { read: true, write: true } },
-
     liveQuery: {
       classNames: [],
     },
