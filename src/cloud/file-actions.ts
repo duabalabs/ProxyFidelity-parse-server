@@ -137,7 +137,6 @@ Parse.Cloud.define(
     try {
       const command = new CompleteMultipartUploadCommand(params);
       const completeUpload = await s3Client.send(command);
-      console.log(completeUpload);
       const ProjectFile = Parse.Object.extend("ProjectFile");
       const projectFile = new ProjectFile({
         fileUrl,
@@ -146,6 +145,7 @@ Parse.Cloud.define(
         fileType,
         fileHash,
         uploadId,
+        filePath,
         project: {
           __type: "Pointer",
           className: "Project",
@@ -162,7 +162,7 @@ Parse.Cloud.define(
 );
 
 Parse.Cloud.define(
-  "generateSinglePresignedUrl",
+  "generatePresignedUrl",
   async (request: { params: UploadDataProps }) => {
     const { fileName, fileType, projectId } = request.params;
 
@@ -194,9 +194,38 @@ Parse.Cloud.define(
         uploadUrl: presignedUrl,
         fileUrl: `${process.env.SPACES_BASE_URL}/${fileName}`,
         cdnUrl: `${process.env.SPACES_CDN_BASE_URL}/${fileName}`,
+        filePath,
       };
     } catch (error) {
       throw new Parse.Error(500, "Error generating presigned URL");
     }
   }
 );
+
+Parse.Cloud.define("generateReadOnlyPresignedFileUrl", async (request) => {
+  const { filePath, fileType } = request.params;
+  const expirationTime = 60 * 5; // URL valid for 5 minutes
+
+  try {
+    const params = {
+      Bucket: process.env.SPACES_BUCKET,
+      Key: filePath,
+      ContentType: fileType,
+    };
+
+    console.log(params);
+    const command = new GetObjectCommand(params);
+    const presignedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 1200,
+    });
+
+    return {
+      presignedUrl,
+      expirationDate: new Date(
+        Date.now() + expirationTime * 1000
+      ).toISOString(),
+    };
+  } catch (error) {
+    throw new Parse.Error(500, "Error generating presigned URL", error);
+  }
+});
