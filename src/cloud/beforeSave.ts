@@ -3,6 +3,7 @@ import { Parse } from "parse/node";
 const setProjectACLForObjects = async (request) => {
   const object = request.object;
   const project = object.get("project");
+  await project.fetch({ useMasterKey: true });
 
   if (project) {
     const projectACL = project.getACL();
@@ -11,6 +12,7 @@ const setProjectACLForObjects = async (request) => {
     }
   }
 };
+
 Parse.Cloud.beforeSave("ProjectFile", setProjectACLForObjects);
 
 Parse.Cloud.beforeSave("CalendarEvent", setProjectACLForObjects);
