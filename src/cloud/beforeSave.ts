@@ -20,3 +20,5 @@ Parse.Cloud.beforeSave("CalendarEvent", setProjectACLForObjects);
 Parse.Cloud.beforeSave("Transaction", setProjectACLForObjects);
 
 Parse.Cloud.beforeSave("Notification", setProjectACLForObjects);
+
+Parse.Cloud.beforeSave("Task", setProjectACLForObjects);
