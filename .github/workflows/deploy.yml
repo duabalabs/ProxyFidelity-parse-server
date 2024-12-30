@@ -1,0 +1,81 @@
+name: Deploy Parse Server
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PARSE_APP_ID: ${{ secrets.PARSE_APP_ID }}
+  PARSE_MASTER_KEY: ${{ secrets.PARSE_MASTER_KEY }}
+  PARSE_JAVASCRIPT_KEY: ${{ secrets.PARSE_JAVASCRIPT_KEY }}
+  PARSE_SERVER_URL: ${{ secrets.PARSE_SERVER_URL }}
+  PARSE_PORT_NUMBER: ${{ secrets.PARSE_PORT_NUMBER }}
+  PARSE_APP_NAME: ${{ secrets.PARSE_APP_NAME }}
+  PARSE_CLOUD_CODE_MAIN: ${{ secrets.PARSE_CLOUD_CODE_MAIN }}
+  PARSE_DASHBOARD_USER: ${{ secrets.PARSE_DASHBOARD_USER }}
+  PARSE_DASHBOARD_PASS: ${{ secrets.PARSE_DASHBOARD_PASS }}
+  SPACES_ENDPOINT: ${{ secrets.SPACES_ENDPOINT }}
+  SPACES_BUCKET: ${{ secrets.SPACES_BUCKET }}
+  SPACES_BASE_URL: ${{ secrets.SPACES_BASE_URL }}
+  SPACES_CDN_BASE_URL: ${{ secrets.SPACES_CDN_BASE_URL }}
+  SPACES_REGION: ${{ secrets.SPACES_REGION }}
+  SPACES_BUCKET_PREFIX: ${{ secrets.SPACES_BUCKET_PREFIX }}
+  SPACES_KEY: ${{ secrets.SPACES_KEY }}
+  SPACES_SECRET: ${{ secrets.SPACES_SECRET }}
+
+jobs:
+  deploy-parse-server:
+    name: Deploy Parse Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Upload Parse Server files
+        uses: appleboy/scp-action@v0.2.2
+        with:
+          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
+          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: parse-server/
+          target: /var/www/parse-server/
+
+      - name: Install Node.js and PM2 if not present
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
+          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
+            if ! command -v pm2 &> /dev/null; then
+              sudo npm install -g pm2
+            fi
+
+      - name: Install Dependencies
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
+          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/parse-server
+            yarn install
+
+      - name: Start or Reload Parse Server with PM2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
+          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if pm2 list | grep -q parse-server; then
+              pm2 reload parse-server
+            else
+              pm2 start /var/www/parse-server/index.js --name parse-server
+            fi
