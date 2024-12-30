@@ -34,10 +34,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Upload Parse Server files
-        uses: appleboy/scp-action@v0.2.2
+        uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
-          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: parse-server/
           target: /var/www/parse-server/
@@ -45,8 +45,8 @@ jobs:
       - name: Install Node.js and PM2 if not present
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
-          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             if ! command -v node &> /dev/null; then
@@ -58,20 +58,20 @@ jobs:
             fi
 
       - name: Install Dependencies
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
-          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/parse-server
             yarn install
 
       - name: Start or Reload Parse Server with PM2
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.PROXYFIDELITY_DROPLET_IP }}
-          username: ${{ secrets.PROXYFIDELITY_DROPLET_USER }}
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             if pm2 list | grep -q parse-server; then
