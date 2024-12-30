@@ -4,6 +4,7 @@ import express from "express";
 import { ParseServer } from "parse-server";
 import path from "path";
 import http from "http";
+import fs from "fs";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -95,22 +96,27 @@ const dashboard_config = () => {
 
   // Serve static assets from the /public folder
   app.use("/public", express.static(path.join(__dirname, "/public")));
-
   // Serve the Parse API on the /parse URL prefix
   await server.start();
   app.use(mountPath, server.app);
   app.use("/dashboard", dashboard);
 
-  // Parse Server plays nicely with the rest of your web routes
-  app.get("/", function (req, res) {
-    res.status(200).send("This is the base url");
+  app.use("/", express.static(path.join(__dirname, "/public")));
+
+  app.get("/*", (req, res) => {
+    const filePath = path.join(__dirname, "public", req.path);
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.sendFile(path.join(__dirname, "public", "index.html"));
+    }
   });
 
-  // There will be a test page available on the /test path of your server url
-  // Remove this before launching your app
-  app.get("/test", function (req, res) {
-    res.sendFile(path.join(__dirname, "/public/test.html"));
-  });
+  // // There will be a test page available on the /test path of your server url
+  // // Remove this before launching your app
+  // app.get("/test", function (req, res) {
+  //   res.sendFile(path.join(__dirname, "/public/test.html"));
+  // });
 
   const port = process.env.PARSE_PORT_NUMBER || 1337;
   const httpServer = http.createServer(app);
