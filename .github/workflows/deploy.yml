@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: parse-server/
+          source: .
           target: /var/www/parse-server/
 
       # Step 4: Install Node.js and PM2 if not present
