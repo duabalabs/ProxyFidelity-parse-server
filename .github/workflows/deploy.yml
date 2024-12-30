@@ -63,16 +63,24 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cat <<EOF > /var/www/parse-server/.env
-            PARSE_APP_ID='${{ secrets.PARSE_APP_ID }}'
-            PARSE_MASTER_KEY='${{ secrets.PARSE_MASTER_KEY }}'
-            PARSE_JAVASCRIPT_KEY='${{ secrets.PARSE_JAVASCRIPT_KEY }}'
-            PARSE_SERVER_URL='${{ secrets.PARSE_SERVER_URL }}'
-            PARSE_DATABASE_URI='${{ secrets.PARSE_DATABASE_URI }}'
-            PARSE_PORT_NUMBER='${{ secrets.PARSE_PORT_NUMBER }}'
-            PARSE_APP_NAME='${{ secrets.PARSE_APP_NAME }}'
-            PARSE_CLOUD_CODE_MAIN='${{ secrets.PARSE_CLOUD_CODE_MAIN }}'
-            PARSE_DASHBOARD_USER='${{ secrets.PARSE_DASHBOARD_USER }}'
-            PARSE_DASHBOARD_PASS='${{ secrets.PARSE_DASHBOARD_PASS }}'
+            PARSE_APP_ID="${{ secrets.PARSE_APP_ID }}"
+            PARSE_MASTER_KEY="${{ secrets.PARSE_MASTER_KEY }}"
+            PARSE_JAVASCRIPT_KEY="${{ secrets.PARSE_JAVASCRIPT_KEY }}"
+            PARSE_SERVER_URL="${{ secrets.PARSE_SERVER_URL }}"
+            PARSE_DATABASE_URI="${{ secrets.PARSE_DATABASE_URI }}"
+            PARSE_PORT_NUMBER="${{ secrets.PARSE_PORT_NUMBER }}"
+            PARSE_APP_NAME="${{ secrets.PARSE_APP_NAME }}"
+            PARSE_CLOUD_CODE_MAIN="${{ secrets.PARSE_CLOUD_CODE_MAIN }}"
+            PARSE_DASHBOARD_USER="${{ secrets.PARSE_DASHBOARD_USER }}"
+            PARSE_DASHBOARD_PASS="${{ secrets.PARSE_DASHBOARD_PASS }}"
+            SPACES_ENDPOINT="${{ secrets.SPACES_ENDPOINT }}"
+            SPACES_BUCKET="${{ secrets.SPACES_BUCKET }}"
+            SPACES_BASE_URL="${{ secrets.SPACES_BASE_URL }}"
+            SPACES_CDN_BASE_URL="${{ secrets.SPACES_CDN_BASE_URL }}"
+            SPACES_REGION="${{ secrets.SPACES_REGION }}"
+            SPACES_BUCKET_PREFIX="${{ secrets.SPACES_BUCKET_PREFIX }}"
+            SPACES_KEY="${{ secrets.SPACES_KEY }}"
+            SPACES_SECRET="${{ secrets.SPACES_SECRET }}"
             EOF
 
       # Step 6: Ensure Node.js 20 and PM2 are installed on the droplet
