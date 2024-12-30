@@ -55,6 +55,11 @@ jobs:
           source: .
           target: /var/www/parse-server/
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
       # Step 4: Install Node.js and PM2 if not present
       - name: Install Node.js and PM2 if not present
         uses: appleboy/ssh-action@v1.2.0
@@ -63,10 +68,6 @@ jobs:
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            if ! command -v node &> /dev/null; then
-              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-              sudo apt-get install -y nodejs
-            fi
             if ! command -v pm2 &> /dev/null; then
               sudo npm install -g pm2
             fi
