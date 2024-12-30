@@ -94,7 +94,7 @@ jobs:
             cd /var/www/parse-server
             yarn install
 
-      # Step 7: Start or reload Parse Server using PM2
+      # Step 7: Start or reload Parse Server using PM2 with yarn start
       - name: Start or Reload Parse Server with PM2
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -102,8 +102,9 @@ jobs:
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cd /var/www/parse-server
             if pm2 list | grep -q parse-server; then
               pm2 reload parse-server
             else
-              pm2 start /var/www/parse-server/index.js --name parse-server
+              pm2 start yarn --name parse-server -- start
             fi
