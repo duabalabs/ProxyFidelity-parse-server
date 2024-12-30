@@ -61,7 +61,35 @@ jobs:
           source: .
           target: /var/www/parse-server/
 
-      # Step 5: Ensure Node.js 20 and PM2 are installed on the droplet
+      # Step 5: Create .env file
+      - name: Create .env File
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cat <<EOF > /var/www/parse-server/.env
+            PARSE_APP_ID=${{ secrets.PARSE_APP_ID }}
+            PARSE_MASTER_KEY=${{ secrets.PARSE_MASTER_KEY }}
+            PARSE_JAVASCRIPT_KEY=${{ secrets.PARSE_JAVASCRIPT_KEY }}
+            PARSE_SERVER_URL=${{ secrets.PARSE_SERVER_URL }}
+            PARSE_PORT_NUMBER=${{ secrets.PARSE_PORT_NUMBER }}
+            PARSE_APP_NAME=${{ secrets.PARSE_APP_NAME }}
+            PARSE_CLOUD_CODE_MAIN=${{ secrets.PARSE_CLOUD_CODE_MAIN }}
+            PARSE_DASHBOARD_USER=${{ secrets.PARSE_DASHBOARD_USER }}
+            PARSE_DASHBOARD_PASS=${{ secrets.PARSE_DASHBOARD_PASS }}
+            SPACES_ENDPOINT=${{ secrets.SPACES_ENDPOINT }}
+            SPACES_BUCKET=${{ secrets.SPACES_BUCKET }}
+            SPACES_BASE_URL=${{ secrets.SPACES_BASE_URL }}
+            SPACES_CDN_BASE_URL=${{ secrets.SPACES_CDN_BASE_URL }}
+            SPACES_REGION=${{ secrets.SPACES_REGION }}
+            SPACES_BUCKET_PREFIX=${{ secrets.SPACES_BUCKET_PREFIX }}
+            SPACES_KEY=${{ secrets.SPACES_KEY }}
+            SPACES_SECRET=${{ secrets.SPACES_SECRET }}
+            EOF
+
+      # Step 6: Ensure Node.js 20 and PM2 are installed on the droplet
       - name: Ensure Node.js 20 and PM2
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -83,7 +111,7 @@ jobs:
             node -v
             npm -v
 
-      # Step 6: Install project dependencies
+      # Step 7: Install project dependencies
       - name: Install Dependencies
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -94,7 +122,7 @@ jobs:
             cd /var/www/parse-server
             yarn install
 
-      # Step 7: Start or reload Parse Server using PM2 with yarn start
+      # Step 8: Start or reload Parse Server using PM2 with yarn start
       - name: Start or Reload Parse Server with PM2
         uses: appleboy/ssh-action@v1.2.0
         with:
