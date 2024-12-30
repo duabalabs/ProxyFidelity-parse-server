@@ -30,9 +30,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Check out repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Ensure target directory exists before uploading files
+      - name: Ensure Target Directory Exists
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo mkdir -p /var/www/parse-server
+            sudo chown -R $USER:$USER /var/www/parse-server
+
+      # Step 3: Upload Parse Server files
       - name: Upload Parse Server files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -42,8 +55,9 @@ jobs:
           source: parse-server/
           target: /var/www/parse-server/
 
+      # Step 4: Install Node.js and PM2 if not present
       - name: Install Node.js and PM2 if not present
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.DROPLET_USER }}
@@ -57,8 +71,9 @@ jobs:
               sudo npm install -g pm2
             fi
 
+      # Step 5: Install project dependencies
       - name: Install Dependencies
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.DROPLET_USER }}
@@ -67,8 +82,9 @@ jobs:
             cd /var/www/parse-server
             yarn install
 
+      # Step 6: Start or reload Parse Server using PM2
       - name: Start or Reload Parse Server with PM2
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.DROPLET_USER }}
