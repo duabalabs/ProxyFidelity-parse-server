@@ -34,13 +34,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js 20 on the GitHub runner
+      # Step 2: Set up Node.js 20
       - name: Set up Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # Step 3: Ensure target directory exists before uploading files
+      # Step 3: Ensure target directory exists
       - name: Ensure Target Directory Exists
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -61,19 +61,27 @@ jobs:
           source: .
           target: /var/www/parse-server/
 
-      # Step 5: Install Node.js 20 and PM2 on the target server
-      - name: Install Node.js 20 and PM2
+      # Step 5: Ensure Node.js 20 and PM2 are installed on the droplet
+      - name: Ensure Node.js 20 and PM2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-            sudo apt-get install -y nodejs
             if ! command -v pm2 &> /dev/null; then
               sudo npm install -g pm2
             fi
+            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+
+            # Set Node.js 20 as the default version for the shell
+            sudo npm install -g n
+            sudo n 20
+
+            # Verify Node.js installation
+            node -v
+            npm -v
 
       # Step 6: Install project dependencies
       - name: Install Dependencies
