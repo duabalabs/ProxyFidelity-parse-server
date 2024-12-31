@@ -72,7 +72,7 @@ jobs:
             PARSE_APP_NAME="${{ secrets.PARSE_APP_NAME }}"
             PARSE_CLOUD_CODE_MAIN="${{ secrets.PARSE_CLOUD_CODE_MAIN }}"
             PARSE_DASHBOARD_USER="${{ secrets.PARSE_DASHBOARD_USER }}"
-            PARSE_DASHBOARD_PASS="${{ secrets.PARSE_DASHBOARD_PASS }}"
+            PARSE_DASHBOARD_PASS=$(echo "${{ secrets.PARSE_DASHBOARD_PASS }}" | base64 -d)
             SPACES_ENDPOINT="${{ secrets.SPACES_ENDPOINT }}"
             SPACES_BUCKET="${{ secrets.SPACES_BUCKET }}"
             SPACES_BASE_URL="${{ secrets.SPACES_BASE_URL }}"
